@@ -25,6 +25,20 @@ except ImportError:
 
 # adapted from https://github.com/ikostrikov/pytorch-a2c-ppo-acktr/blob/master/envs.py
 def make_env(env_id, seed, rank, episode_life=True):
+    """Creates wrapped environments for direct experimentation.
+
+    This function handles different types of environments- mujoco, gym, roboschool, atari. It handles all preprocessing
+    and applies wrappers from openai baselines.
+
+    Args:
+        env_id (string): env id or name.
+        seed: random seed.
+        rank: identifier for vectorized environments
+        episode_life: arg for deepmind wrapper
+
+    Returns:
+
+    """
     def _thunk():
         random_seed(seed)
         if env_id.startswith("dm"):
@@ -57,6 +71,11 @@ def make_env(env_id, seed, rank, episode_life=True):
 
 class OriginalReturnWrapper(gym.Wrapper):
     def __init__(self, env):
+        """Wrapper that just adds episodic rewards to info.
+
+        Args:
+            env: environment object
+        """
         gym.Wrapper.__init__(self, env)
         self.total_rewards = 0
 
@@ -76,6 +95,13 @@ class OriginalReturnWrapper(gym.Wrapper):
 
 class TransposeImage(gym.ObservationWrapper):
     def __init__(self, env=None):
+        """Wrapper that transposes image observations.
+
+        Useful for pytorch type tensors(channel first).
+
+        Args:
+            env: environement object.
+        """
         super(TransposeImage, self).__init__(env)
         obs_shape = self.observation_space.shape
         self.observation_space = Box(
@@ -158,6 +184,16 @@ class Task:
                  log_dir=None,
                  episode_life=True,
                  seed=np.random.randint(int(1e5))):
+        """Class generally used by the user for creating environments.
+        
+        Args:
+            name (string): env name
+            num_envs (int): number of envs
+            single_process (bool): True if process is single process. 
+            log_dir: log directory.
+            episode_life (bool): True if episodic life
+            seed: random seed
+        """
         if log_dir is not None:
             mkdir(log_dir)
         envs = [make_env(name, seed, i, episode_life) for i in range(num_envs)]

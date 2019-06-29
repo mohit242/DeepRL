@@ -12,6 +12,15 @@ class Config:
     DEVICE = torch.device('cpu')
 
     def __init__(self):
+        """Stores config values.
+
+        Config stores all config values required for experiment run and provides methods to update these values.
+
+        Examples:
+            >>> config = Config()
+            >>> updated_config = {'tag': 'dueling_net', 'num_workers': 3}
+            >>> config.merge(config_dict= updated_config)
+        """
         self.parser = argparse.ArgumentParser()
         self.task_fn = None
         self.optimizer_fn = None
@@ -74,6 +83,12 @@ class Config:
         self.parser.add_argument(*args, **kwargs)
 
     def merge(self, config_dict=None):
+        """Updates attributes with values in config dict or argparse parser.
+
+        Args:
+            config_dict (dict, optional): dict of config values.
+
+        """
         if config_dict is None:
             args = self.parser.parse_args()
             config_dict = args.__dict__

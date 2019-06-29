@@ -61,6 +61,12 @@ def random_sample(indices, batch_size):
 
 
 def generate_tag(params):
+    """Creates a tag to summarize params.
+
+    Args:
+        params (dict): Config params.
+
+    """
     if 'tag' in params.keys():
         return
     game = params['game']
